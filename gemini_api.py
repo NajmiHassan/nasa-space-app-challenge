@@ -4,7 +4,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 class GeminiClient:
-    """Wrapper class for Google Gemini API integration."""
+    """Wrapper for Google Gemini API."""
 
     def __init__(self):
         load_dotenv()
@@ -14,7 +14,6 @@ class GeminiClient:
         self._configure()
 
     def _configure(self):
-        """Configure Gemini model if key exists."""
         if not self.api_key:
             print("⚠️ GEMINI_API_KEY not found in .env file.")
             return
@@ -25,15 +24,18 @@ class GeminiClient:
             print(f"Error initializing Gemini model: {e}")
             self.model = None
 
-    def summarize_study(self, metadata: dict) -> str:
-        """Generate a summary for NASA OSDR study metadata."""
+    def summarize_study(self, paper_text: str, paper_title: str = "") -> str:
+        """Generate a layperson-friendly summary of a research paper."""
         if not self.model:
             return "Gemini model not configured properly."
 
         prompt = (
-            "Summarize this NASA space biology study for a general audience. "
-            "Focus on the experiment goal, biological context, and results.\n\n"
-            f"{metadata}"
+            f"You are an expert space biologist summarizing NASA bioscience research.\n"
+            f"Title: {paper_title}\n\n"
+            f"Summarize this paper in 5 bullet points:\n"
+            f"1. Study goal\n2. Experiment setup\n3. Key results\n"
+            f"4. Biological implications\n5. Relevance for space exploration.\n\n"
+            f"Paper text:\n{paper_text[:8000]}"
         )
 
         try:
