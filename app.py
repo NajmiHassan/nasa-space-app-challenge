@@ -7,6 +7,9 @@ import pandas as pd
 from collections import Counter
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from pyvis.network import Network
+import networkx as nx
+import streamlit.components.v1 as components
 
 from paper_reader import PaperReader
 from gemini_api import GeminiClient
@@ -14,7 +17,7 @@ from gemini_api import GeminiClient
 # ---------- Setup ----------
 st.set_page_config(page_title="NASA Space Biology Knowledge Engine", layout="wide")
 st.title("🧬 NASA Space Biology Knowledge Engine — Local Papers")
-st.markdown("Search, skim abstracts, summarize with Gemini, and explore insights 🔍")
+st.markdown("Search, skim abstracts, summarize with Gemini, generate insights, and visualize topics 🔍")
 
 # Initialize
 paper_reader = PaperReader("papers/first_50")
@@ -92,6 +95,9 @@ query = st.sidebar.text_input("Enter keyword (e.g., plant, gravity, RNA)")
 st.sidebar.info("Use keywords related to biology or space environment.")
 st.sidebar.markdown("---")
 
+generate_cloud = st.sidebar.button("🌐 Generate Keyword Cloud for Filtered Papers")
+generate_graph = st.sidebar.button("🧩 Generate AI Topic Graph")
+
 # ---------- Main logic ----------
 if query:
     st.subheader(f"Results for **'{query}'**")
@@ -105,18 +111,16 @@ if query:
         st.warning("No matching papers found.")
     else:
         st.success(f"Found {len(matches)} related papers.")
-
         all_categories = []
 
+        # ---------- Show each paper ----------
         for fname, text in matches:
-            snippet = text[:400].replace("\n", " ")
             cats = categorize_paper(text)
             all_categories.extend(cats)
-
             with st.expander(f"📄 {fname} — *{', '.join(cats)}*"):
-                st.markdown(f"**📑 Abstract Snippet:**\n\n{text[:3000][:500]}...")
+                st.markdown(f"**📑 Abstract Snippet:**\n\n{text[:500].replace('\n',' ')}...")
 
-                col1, col2, col3 = st.columns(3)
+                col1, col2 = st.columns(2)
 
                 with col1:
                     if st.button("🧠 Gemini Summary", key=f"sum_{fname}"):
@@ -126,15 +130,6 @@ if query:
                             st.markdown(summary)
 
                 with col2:
-                    if st.button("📊 Generate Paper Keyword Cloud", key=f"cloud_{fname}"):
-                        top_keywords = extract_top_keywords(text)
-                        wordcloud = WordCloud(width=800, height=400, background_color="white").generate_from_frequencies(dict(top_keywords))
-                        fig, ax = plt.subplots()
-                        ax.imshow(wordcloud, interpolation="bilinear")
-                        ax.axis("off")
-                        st.pyplot(fig)
-
-                with col3:
                     if st.button("💾 Save Summary + Metadata", key=f"save_{fname}"):
                         meta = gen_metadata_cached(text)
                         summary = gen_summary_cached(text[:8000], fname)
@@ -159,7 +154,48 @@ if query:
                 f"Here are multiple study abstracts: {combined_text[:10000]}. "
                 "Summarize key discoveries, common patterns, and research trends."
             )
-        st.markdown("### 🧩 Gemini Insights Summary")
-        st.markdown(insights)
+
+        # ---------- Generate Combined Keyword Cloud ----------
+        if generate_cloud:
+            st.markdown("---")
+            st.header(f"🌐 Keyword Cloud — Filtered Papers for '{query}'")
+            all_text = " ".join([t for _, t in matches])
+            top_keywords = extract_top_keywords(all_text, n=50)
+            wordcloud = WordCloud(width=900, height=450, background_color="white").generate_from_frequencies(dict(top_keywords))
+            fig, ax = plt.subplots(figsize=(10,5))
+            ax.imshow(wordcloud, interpolation="bilinear")
+            ax.axis("off")
+            st.pyplot(fig)
+
+        # ---------- AI Topic Graph ----------
+        if generate_graph:
+            st.markdown("---")
+            st.header(f"🧩 AI Topic Graph — Filtered Papers for '{query}'")
+            paper_topics = {}
+            for fname, text in matches:
+                abstract = text[:2000]
+                topics = gemini.summarize_study(
+                    f"Identify up to 3 main research topics for this paper abstract. Return as JSON list.\n\n{abstract}"
+                )
+                try:
+                    topics_list = json.loads(topics)
+                except:
+                    topics_list = [t.strip() for t in re.split(r"[,\n]", topics) if t.strip()]
+                paper_topics[fname] = topics_list
+
+            G = nx.Graph()
+            for paper, topics in paper_topics.items():
+                G.add_node(paper, color='lightblue', title=paper)
+                for topic in topics:
+                    G.add_node(topic, color='lightgreen', title=topic)
+                    G.add_edge(paper, topic)
+
+            net = Network(height="600px", width="100%", notebook=False)
+            net.from_nx(G)
+            net.show_buttons(filter_=['physics'])
+            graph_path = "topic_graph.html"
+            net.save_graph(graph_path)
+            components.html(open(graph_path, 'r', encoding='utf-8').read(), height=650)
+
 else:
     st.info("Type a keyword in the sidebar to begin searching local papers.")

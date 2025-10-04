@@ -25,13 +25,8 @@ class GeminiClient:
             self.model = None
 
     def summarize_study(self, paper_text: str, paper_title: str = "") -> str:
-        """
-        Create a compact 5-bullet summary from the paper text.
-        Truncates the input to a safe size to avoid long requests.
-        """
         if not self.model:
             return "Gemini model not configured."
-
         truncated = paper_text[:7000]
         prompt = (
             f"You are an expert science communicator. Read the following text and produce a concise summary for a general audience.\n"
@@ -40,7 +35,6 @@ class GeminiClient:
             f"1) Study goal\n2) Experiment setup\n3) Key results\n4) Biological implications\n5) Relevance for space exploration or open questions.\n\n"
             f"Text:\n{truncated}"
         )
-
         try:
             response = self.model.generate_content(prompt)
             return getattr(response, "text", str(response)).strip()
@@ -48,13 +42,8 @@ class GeminiClient:
             return f"Error generating summary: {e}"
 
     def extract_metadata(self, paper_text: str) -> dict:
-        """
-        Ask Gemini to extract structured metadata (JSON).
-        Returns a dict if valid JSON, otherwise returns {'raw': text}.
-        """
         if not self.model:
             return {"error": "Gemini model not configured."}
-
         truncated = paper_text[:9000]
         prompt = (
             "Extract the following metadata from the research text and output a JSON object ONLY.\n"
@@ -66,7 +55,6 @@ class GeminiClient:
             '"Organisms": ["mouse"], "Methods": ["RNA-seq"], "MainTopic": "plant growth", '
             '"KeyFindings": ["..."], "Conclusions": ["..."]}'
         )
-
         try:
             response = self.model.generate_content(prompt)
             text = getattr(response, "text", str(response)).strip()
