@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -73,3 +74,25 @@ class GeminiClient:
                 return {"raw": text}
         except Exception as e:
             return {"error": str(e)}
+    
+    def extract_keywords(self, query: str) -> list:
+        """Use Gemini to extract 3–6 meaningful search keywords from a user query."""
+        import re
+        if not self.model:
+            return [query.lower()]
+        
+        # Clean up query (remove helper phrases)
+        clean_query = re.sub(r"\b(find|papers|containing|about|with|related to|on|in)\b", "", query, flags=re.I).strip()
+
+        prompt = (
+            "You are an assistant that extracts the main scientific search keywords from a user query. "
+            "Output ONLY a comma-separated list of 3 to 6 concise keywords — no sentences, no explanations.\n\n"
+            f"Query: {clean_query}"
+        )
+        try:
+            response = self.model.generate_content(prompt)
+            text = getattr(response, "text", str(response)).strip()
+            keywords = [w.strip().lower() for w in re.split(r"[,;]", text) if w.strip()]
+            return keywords or [clean_query.lower()]
+        except Exception:
+            return [clean_query.lower()]

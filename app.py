@@ -89,11 +89,21 @@ def save_row_csv(row: dict, csv_path="summaries.csv"):
         df_row.to_csv(csv_path, index=False)
     return True
 
+@st.cache_data
+def extract_keywords_from_query(query: str):
+    """Call Gemini keyword extractor."""
+    return gemini.extract_keywords(query)
+
+
 # ---------- Sidebar ----------
 st.sidebar.header("🔍 Search Options")
-query = st.sidebar.text_input("Enter keyword (e.g., plant, gravity, RNA)")
-st.sidebar.info("Use keywords related to biology or space environment.")
+query = st.sidebar.text_input(
+    "Enter your question or search phrase",
+    placeholder="e.g., Find papers related to plant growth in microgravity"
+)
+st.sidebar.info("You can enter keywords or full sentences (e.g., 'Find studies on plant growth in space').")
 st.sidebar.markdown("---")
+
 
 generate_cloud = st.sidebar.button("🌐 Generate Keyword Cloud for Filtered Papers")
 generate_graph = st.sidebar.button("🧩 Generate AI Topic Graph")
@@ -102,10 +112,17 @@ generate_graph = st.sidebar.button("🧩 Generate AI Topic Graph")
 if query:
     st.subheader(f"Results for **'{query}'**")
     matches = []
+    with st.spinner("🔍 Interpreting your query..."):
+        search_keywords = extract_keywords_from_query(query)
+
+    st.write(f"🔍 Interpreted keywords: {', '.join(search_keywords)}")
+
+
     for fname in paper_reader.list_papers():
         text = read_pdf_cached(fname)
-        if query.lower() in fname.lower() or query.lower() in text[:5000].lower():
+        if any(k in text[:5000].lower() or k in fname.lower() for k in search_keywords):
             matches.append((fname, text))
+
 
     if not matches:
         st.warning("No matching papers found.")
@@ -147,13 +164,6 @@ if query:
         st.markdown("---")
         st.header("📊 Insights Dashboard — Topic Distribution")
         plot_category_distribution(all_categories)
-
-        combined_text = " ".join([text[:2000] for _, text in matches])
-        with st.spinner("Analyzing overall insights..."):
-            insights = gemini.summarize_study(
-                f"Here are multiple study abstracts: {combined_text[:10000]}. "
-                "Summarize key discoveries, common patterns, and research trends."
-            )
 
         # ---------- Generate Combined Keyword Cloud ----------
         if generate_cloud:
