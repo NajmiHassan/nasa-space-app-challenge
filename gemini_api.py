@@ -81,7 +81,6 @@ class GeminiClient:
         if not self.model:
             return [query.lower()]
         
-        # Clean up query (remove helper phrases)
         clean_query = re.sub(r"\b(find|papers|containing|about|with|related to|on|in)\b", "", query, flags=re.I).strip()
 
         prompt = (

@@ -91,7 +91,6 @@ def save_row_csv(row: dict, csv_path="summaries.csv"):
 
 @st.cache_data
 def extract_keywords_from_query(query: str):
-    """Call Gemini keyword extractor."""
     return gemini.extract_keywords(query)
 
 
