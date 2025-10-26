@@ -1,5 +1,7 @@
 Presentation link: https://docs.google.com/presentation/d/1qGccb_PpgbKTmouMRoO1dBJj-nKjcKldq4nCHH1IHLg/edit?slide=id.p9#slide=id.p9
 
+Streamlit application: https://spacebioapp-kc72ri5ahc95xefjh9ydwf.streamlit.app/
+
 # NASA Space Biology Knowledge Engine
 
 A simple AI-powered web app to explore and summarize NASA space biology papers.
