@@ -134,7 +134,8 @@ if query:
             cats = categorize_paper(text)
             all_categories.extend(cats)
             with st.expander(f"📄 {fname} — *{', '.join(cats)}*"):
-                st.markdown(f"**📑 Abstract Snippet:**\n\n{text[:500].replace('\n',' ')}...")
+                snippet = text[:500].replace('\n', ' ')
+                st.markdown(f"**📑 Abstract Snippet:**\n\n{snippet}...")
 
                 col1, col2 = st.columns(2)
 

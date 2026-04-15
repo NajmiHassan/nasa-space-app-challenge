@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 class GeminiClient:
     """Simple wrapper for Google Gemini (generative AI) calls."""
 
-    def __init__(self, model_name="gemini-2.0-flash-lite"):
+    def __init__(self, model_name="gemini-3-flash-preview"):
         load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
