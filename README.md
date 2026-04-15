@@ -1,10 +1,10 @@
-# NASA Space Biology Knowledge Engine
+## 🔗 Links
 
-- **Streamlit application:** [https://nasa-space-app-challenge-xd3zh8qdvvpz6wgcfguehy.streamlit.app/]
-- **Presentation:** [https://docs.google.com/presentation/d/1qGccb_PpgbKTmouMRoO1dBJj-nKjcKldq4nCHH1IHLg/edit?usp=sharing]
-- **Video explanation:** [https://youtu.be/29cE5yI8RcI]
+- **Live Demo**: [Streamlit Cloud App](https://nasa-space-app-challenge-xd3zh8qdvvpz6wgcfguehy.streamlit.app/)
+- **Presentation**: [Google Slides](https://docs.google.com/presentation/d/1qGccb_PpgbKTmouMRoO1dBJj-nKjcKldq4nCHH1IHLg/edit?slide=id.p9#slide=id.p9)
+- **Video explanation:** [YouTube Link](https://youtu.be/29cE5yI8RcI)
 
-A local AI-powered Streamlit web application for exploring and analyzing NASA space biology research papers. The app processes 48 PDF documents containing scientific studies on biological effects of spaceflight, microgravity, and related topics.
+A AI-powered Streamlit web application for exploring and analyzing NASA space biology research papers. The app processes  ~50 PDF documents containing scientific studies on biological effects of spaceflight, microgravity, and related topics.
 
 ## 🚀 How It Works
 
@@ -109,7 +109,7 @@ The search accepts natural language questions or keyword phrases:
 
 ### Data Files
 
-- **Papers**: Located in `papers/first_50/` (48 PDF files)
+- **Papers**: Located in `papers/first_50/` (~50 PDF files)
 - **Saved Summaries**: Automatically saved to `summaries.csv`
 - **Topic Graph**: Generated as `topic_graph.html`
 
@@ -151,11 +151,6 @@ Papers are automatically categorized into:
 - Immune System
 - Genomics/Omics Studies
 - Other
-
-## 🔗 Links
-
-- **Live Demo**: [Streamlit Cloud App](https://spacebioapp-kc72ri5ahc95xefjh9ydwf.streamlit.app/)
-- **Presentation**: [Google Slides](https://docs.google.com/presentation/d/1qGccb_PpgbKTmouMRoO1dBJj-nKjcKldq4nCHH1IHLg/edit?slide=id.p9#slide=id.p9)
 
 ## 📝 Notes
 
