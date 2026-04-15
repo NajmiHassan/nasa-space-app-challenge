@@ -1,8 +1,8 @@
 # NASA Space Biology Knowledge Engine
 
-- **Streamlit application:** [add your link here]
-- **Presentation:** [add your link here]
-- **Video explanation:** [add your link here]
+- **Streamlit application:** [https://nasa-space-app-challenge-xd3zh8qdvvpz6wgcfguehy.streamlit.app/]
+- **Presentation:** [https://docs.google.com/presentation/d/1qGccb_PpgbKTmouMRoO1dBJj-nKjcKldq4nCHH1IHLg/edit?usp=sharing]
+- **Video explanation:** [https://youtu.be/29cE5yI8RcI]
 
 A local AI-powered Streamlit web application for exploring and analyzing NASA space biology research papers. The app processes 48 PDF documents containing scientific studies on biological effects of spaceflight, microgravity, and related topics.
 
